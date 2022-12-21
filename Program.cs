@@ -1,7 +1,20 @@
+using FrontEndService;
+using FrontEndService.Services;
+using FrontEndService.Services.IServices;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+//configuring Httpclient
+builder.Services.AddHttpClient<IProductService, ProductService>();
+//adding the baseurl
+SD.ProductAPIBase = builder.Configuration["ServiceUrls:ProductAPI"];
+//configuring the productservice
+builder.Services.AddScoped<IProductService, ProductService>();
+
+
 
 var app = builder.Build();
 
