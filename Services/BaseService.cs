@@ -45,7 +45,7 @@ public class BaseService : IBaseService
                     message.Method = HttpMethod.Get;
                     break;
             }
-
+            
             apiResponse = await client.SendAsync(message);
             var apiContent = await apiResponse.Content.ReadAsStringAsync();
             var apiResponseDto = JsonConvert.DeserializeObject<T>(apiContent);
