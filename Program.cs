@@ -14,7 +14,8 @@ SD.ProductAPIBase = builder.Configuration["ServiceUrls:ProductAPI"];
 //configuring the productservice
 builder.Services.AddScoped<IProductService, ProductService>();
 
-
+//runtime changes for razor
+builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 var app = builder.Build();
 

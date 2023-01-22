@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace FrontEndService.Controllers;
 
-[Route("[controller]")]
+
 public class ProductController : Controller
 {
     private readonly ILogger<ProductController> _logger;
@@ -28,5 +28,52 @@ public class ProductController : Controller
         return View(productList);
     }
 
+    public async Task<IActionResult> ProductCreate()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ProductCreate(ProductDto product)
+    {
+        if (ModelState.IsValid)
+        {
+            var response = await _productService.CreateProductAsync<ResponseDto>(product);
+            if (response != null && response.IsSuccess)
+            {
+                return RedirectToAction(nameof(ProductIndex));
+            }
+        }
+        return View(product);
+    }
+
+
+    public async Task<IActionResult> ProductEdit(int id)
+    {
+
+        var response = await _productService.GetProductByIdAsync<ResponseDto>(id);
+        if (response != null && response.IsSuccess)
+        {
+            ProductDto productDto = JsonConvert.DeserializeObject<ProductDto>(Convert.ToString(response.Result));
+            return View(productDto);
+        }
+        return NotFound();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ProductEdit(ProductDto product)
+    {
+        if (ModelState.IsValid)
+        {
+            var response = await _productService.UpdateProductAsync<ResponseDto>(product);
+            if (response != null && response.IsSuccess)
+            {
+                return RedirectToAction(nameof(ProductIndex));
+            }
+        }
+        return View(product);
+    }
 
 }
