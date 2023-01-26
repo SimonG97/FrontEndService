@@ -17,6 +17,7 @@ public class ProductController : Controller
         _productService = productService;
     }
 
+    #region index
     public async Task<IActionResult> ProductIndex()
     {
         List<ProductDto> productList = new();
@@ -27,7 +28,9 @@ public class ProductController : Controller
         }
         return View(productList);
     }
+    #endregion
 
+    #region create
     public async Task<IActionResult> ProductCreate()
     {
         return View();
@@ -47,8 +50,9 @@ public class ProductController : Controller
         }
         return View(product);
     }
+    #endregion
 
-
+    #region edit
     public async Task<IActionResult> ProductEdit(int id)
     {
 
@@ -75,5 +79,38 @@ public class ProductController : Controller
         }
         return View(product);
     }
+    #endregion
+
+    #region delete
+    public async Task<IActionResult> ProductDelete(int id)
+    {
+
+        var response = await _productService.GetProductByIdAsync<ResponseDto>(id);
+        if (response != null && response.IsSuccess)
+        {
+            ProductDto productDto = JsonConvert.DeserializeObject<ProductDto>(Convert.ToString(response.Result));
+            return View(productDto);
+        }
+        return NotFound();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ProductDelete(ProductDto product)
+    {
+        if (ModelState.IsValid)
+        {
+            var response = await _productService.DeleteProductAsync<ResponseDto>(product.ProductId);
+            if (response != null && response.IsSuccess)
+            {
+                return RedirectToAction(nameof(ProductIndex));
+            }
+        }
+        return View(product);
+    }
+    #endregion
+
+
+
 
 }
