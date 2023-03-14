@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System.Net;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using FrontEndService.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FrontEndService.Controllers;
 
@@ -21,6 +23,17 @@ public class HomeController : Controller
     public IActionResult Privacy()
     {
         return View();
+    }
+
+    [Authorize]
+    public IActionResult Login()
+    {
+        return RedirectToAction(nameof(Index));
+    }
+
+    public IActionResult Logout()
+    {
+        return SignOut("Cookies", "iodc");
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
