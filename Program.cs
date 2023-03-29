@@ -1,6 +1,8 @@
 using FrontEndService;
 using FrontEndService.Services;
 using FrontEndService.Services.IServices;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,16 +18,14 @@ SD.ProductAPIBase = builder.Configuration["ServiceUrls:ProductAPI"];
 //configuring the productservice
 builder.Services.AddScoped<IProductService, ProductService>();
 
-//runtime changes for razor
-builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
-
 //configuring authentication
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = "Cookies";
-    options.DefaultAuthenticateScheme = "oidc";//means open id connect
-}).AddCookie("Cookies", c => c.ExpireTimeSpan = TimeSpan.FromMinutes(10))
-.AddOpenIdConnect("oidc", options =>
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+})
+.AddCookie(c => c.ExpireTimeSpan = TimeSpan.FromMinutes(10))
+.AddOpenIdConnect(options =>
 {
     options.Authority = builder.Configuration["ServiceUrls:IdentityAPI"];
     options.GetClaimsFromUserInfoEndpoint = true;
@@ -38,6 +38,9 @@ builder.Services.AddAuthentication(options =>
     options.SaveTokens = true;
     options.RequireHttpsMetadata = false;
 });
+
+//runtime changes for razor
+builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 var app = builder.Build();
 

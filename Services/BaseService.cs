@@ -20,7 +20,7 @@ public class BaseService : IBaseService
     {
         try
         {
-            var client = _httpClient.CreateClient("clientapi");
+            var client = _httpClient.CreateClient("mango");
             HttpRequestMessage message = new HttpRequestMessage();
             message.Headers.Add("Accept", "application/json");
             message.RequestUri = new Uri(apiRequest.Url);
@@ -45,7 +45,7 @@ public class BaseService : IBaseService
                     message.Method = HttpMethod.Get;
                     break;
             }
-            
+
             apiResponse = await client.SendAsync(message);
             var apiContent = await apiResponse.Content.ReadAsStringAsync();
             var apiResponseDto = JsonConvert.DeserializeObject<T>(apiContent);
